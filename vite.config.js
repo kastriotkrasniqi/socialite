@@ -10,6 +10,11 @@ export default defineConfig({
         }),
         vue({
             template: {
+                compilerOptions:{
+                    isCustomElement: (tag) => {
+                        return tag.startsWith('ion-')
+                    }
+                },
                 transformAssetUrls: {
                     base: null,
                     includeAbsolute: false,
