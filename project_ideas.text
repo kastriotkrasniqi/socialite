@@ -1,0 +1,27 @@
+====== Friend Recommendations ======
+Recommendation Algorithm: Use mutual friends or shared interests (e.g., groups or events) to recommend friends. You could suggest people who have the highest number of mutual friends.
+==============
+
+
+
+====== Caching  ======
+Friend List Caching: For active users, cache the friend list to reduce repetitive database queries.
+
+For users with large friend lists, cache the results of friendship queries. This will improve performance when displaying lists or fetching mutual friends. Use tools like Redis or Laravel’s built-in caching system to store frequently accessed data.
+===============
+
+
+
+====== Pivot Model (Optional)  ======
+Although you're not required to create a pivot model, if your friendship system grows complex and you need to interact with pivot data directly, you can optionally create a Friendship model. This is especially useful if you need more logic around the pivot data.
+===============
+
+
+======   ======
+
+===============
+
+
+======   ======
+
+===============
