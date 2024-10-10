@@ -2,10 +2,12 @@
 
 namespace App\Traits;
 
+use App\Enums\FriendshipStatus;
 use App\Models\User;
 
 trait HasFriends
 {
+
     /**
      * Get all friends of the user.
      */
@@ -13,7 +15,7 @@ trait HasFriends
     {
         return $this->belongsToMany(User::class, 'friendships', 'user_id', 'friend_id')
             ->withPivot('status')
-            ->wherePivot('status', 'accepted')
+            ->wherePivot('status', FriendshipStatus::ACCEPTED->value)
             ->withTimestamps();
     }
 
@@ -24,7 +26,7 @@ trait HasFriends
     {
         return $this->belongsToMany(User::class, 'friendships', 'friend_id', 'user_id')
             ->withPivot('status')
-            ->wherePivot('status', 'pending')
+            ->wherePivot('status', FriendshipStatus::PENDING->value)
             ->withTimestamps();
     }
 
@@ -35,9 +37,11 @@ trait HasFriends
     {
         return $this->belongsToMany(User::class, 'friendships', 'user_id', 'friend_id')
             ->withPivot('status')
-            ->wherePivot('status', 'pending')
+            ->wherePivot('status', FriendshipStatus::PENDING->value)
             ->withTimestamps();
     }
+
+
 
     /**
      * Send a friend request to another user.
@@ -48,7 +52,8 @@ trait HasFriends
             return false; // Already sent a request or already friends
         }
 
-        $this->friends()->attach($user->id, ['status' => 'pending']);
+        $this->friends()->attach($user->id, ['status' => FriendshipStatus::PENDING->value]);
+
         return true;
     }
 
@@ -61,8 +66,10 @@ trait HasFriends
             return false; // No friend request to accept
         }
 
-        $this->friendRequests()->updateExistingPivot($user->id, ['status' => 'accepted']);
-        $this->friends()->attach($user->id, ['status' => 'accepted']); // Make it mutual
+        $this->friendRequests()->updateExistingPivot($user->id, ['status' => FriendshipStatus::ACCEPTED->value]);
+
+        $this->friends()->attach($user->id, ['status' => FriendshipStatus::ACCEPTED->value]); // Make it mutual
+
         return true;
     }
 
@@ -91,6 +98,7 @@ trait HasFriends
         // Detach both sides of the friendship
         $this->friends()->detach($user->id);
         $user->friends()->detach($this->id);
+
         return true;
     }
 
@@ -99,15 +107,18 @@ trait HasFriends
      */
     public function mutualFriends(User $user)
     {
-        return $this->friends()->whereIn('id', $user->friends()->pluck('id'))->get();
+        return $this->friends()->whereIn('friend_id', $user->friends()->pluck('friend_id'))->get();
     }
+
 
     /**
      * Check if there is a pending friend request from another user.
      */
     public function hasFriendRequestFrom(User $user)
     {
-        return $this->friendRequests()->where('user_id', $user->id)->exists();
+        return $this->friendRequests()
+                    ->where('user_id', $user->id)
+                    ->exists();
     }
 
     /**
@@ -115,7 +126,9 @@ trait HasFriends
      */
     public function hasSentFriendRequestTo(User $user)
     {
-        return $this->pendingFriendRequests()->where('friend_id', $user->id)->exists();
+        return $this->pendingFriendRequests()
+                    ->where('friend_id', $user->id)
+                    ->exists();
     }
 
     /**
@@ -123,6 +136,8 @@ trait HasFriends
      */
     public function isFriendsWith(User $user)
     {
-        return $this->friends()->where('friend_id', $user->id)->exists();
+        return $this->friends()
+                    ->where('friend_id', $user->id)
+                    ->exists();
     }
 }

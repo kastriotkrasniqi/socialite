@@ -8,7 +8,7 @@ enum FriendshipStatus: string
 
     case ACCEPTED  = 'accepted';
 
-    case REJECTED  = 'rejected ';
+    case REJECTED  = 'rejected';
 
     case BLOCKED   = 'blocked';
 }
