@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\LikeController;
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TimelineController;
 use App\Notifications\Friendship\FriendRequest;
@@ -22,6 +25,13 @@ Route::post('/notifications/{notification}/markAsRead',[NotificationsController:
 
 Route::get('/api/notifications',[NotificationsController::class,'index'])->name('api.notifications')->middleware('auth');
 
+
+Route::post('/post',[PostController::class,'store'])->name('post.store')->middleware('auth');
+
+
+Route::post('/comment',[CommentController::class,'store'])->name('comment.store')->middleware('auth');
+
+Route::post('/like',[LikeController::class,'store'])->name('like.store')->middleware('auth');
 
 
 Route::middleware('auth')->group(function () {
