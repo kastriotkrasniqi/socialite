@@ -2,11 +2,12 @@
 
 namespace App\Traits;
 
-use App\Enums\FriendshipStatus;
 use App\Models\User;
+use App\Enums\FriendshipStatus;
 
 trait HasFriends
 {
+
 
     /**
      * Get all friends of the user.
@@ -139,5 +140,19 @@ trait HasFriends
         return $this->friends()
                     ->where('friend_id', $user->id)
                     ->exists();
+    }
+
+    public function notFriendsWith()
+    {
+        // Get the IDs of users who are friends, including pending friends
+        $friendIds = $this->friends()->pluck('friend_id')
+            ->merge($this->pendingFriendRequests()->pluck('friend_id'))
+            ->unique()
+            ->values();
+
+        // Get all users except those who are already friends
+        return User::whereNotIn('id', $friendIds)
+            ->where('id', '!=', $this->id) // Exclude the current user
+            ->get();
     }
 }

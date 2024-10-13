@@ -3,15 +3,19 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Post;
 use App\Models\Friendship;
 use App\Traits\HasFriends;
+use Spatie\Sluggable\HasSlug;
+use App\Enums\FriendshipStatus;
+use Spatie\Sluggable\SlugOptions;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasFriends;
+    use HasFactory, Notifiable, HasFriends, HasSlug;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +25,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'username',
         'password',
     ];
 
@@ -48,5 +53,44 @@ class User extends Authenticatable
     }
 
 
+    /**
+     * Get the options for generating the slug.
+     */
+    public function getSlugOptions() : SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('name')
+            ->saveSlugsTo('username')
+            ->usingSeparator('_')
+            ->slugsShouldBeNoLongerThan(50);
+    }
+
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'username';
+    }
+
+
+
+    /**
+     * Get all posts made by friends using hasManyThrough.
+     */
+    public function friendPosts()
+    {
+        return $this->hasManyThrough(Post::class, Friendship::class, 'user_id', 'user_id', 'id', 'friend_id')
+            ->where('friendships.status', FriendshipStatus::ACCEPTED->value);
+    }
+
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
 
 }

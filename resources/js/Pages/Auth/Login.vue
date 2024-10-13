@@ -61,8 +61,7 @@ const submit = () => {
             <div>
                 <InputLabel for="password" value="Password" />
                 <div class="mt-2.5">
-                    <TextInput id="password" type="password" name="password" v-model="form.password"
-                        placeholder="***" />
+                    <TextInput id="password" type="password" name="password" v-model="form.password" />
                 </div>
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>

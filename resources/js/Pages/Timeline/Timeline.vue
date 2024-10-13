@@ -1,6 +1,13 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import SuggestedPeople from './Partials/SuggestedPeople.vue';
+import { ref } from 'vue';
+defineProps({
+    suggestedPeople: {
+        type: Object,
+    },
+})
 </script>
 
 <template>
@@ -726,14 +733,15 @@ import { Head } from '@inertiajs/vue3';
                 <div class="lg:space-y-4 lg:pb-8 max-lg:grid sm:grid-cols-2 max-lg:gap-6"
                     uk-sticky="media: 1024; end: #js-oversized; offset: 80">
 
-                    <div class="box p-5 px-6">
+                    <!-- // people_you_may_know -->
+                    <!-- <div class="box p-5 px-6 hidden">
 
                         <div class="flex items-baseline justify-between text-black dark:text-white">
                             <h3 class="font-bold text-base"> People you may know </h3>
                             <a href="#" class="text-sm text-blue-500">See all</a>
                         </div>
 
-                        <div class="side-list">
+                        <div class="side-list" v-for="people in people_you_may_know" :key="people.id">
 
                             <div class="side-list-item">
                                 <a href="timeline.html">
@@ -741,167 +749,27 @@ import { Head } from '@inertiajs/vue3';
                                 </a>
                                 <div class="flex-1">
                                     <a href="timeline.html">
-                                        <h4 class="side-list-title"> John Michael </h4>
+                                        <h4 class="side-list-title">{{ people.name }}</h4>
                                     </a>
                                     <div class="side-list-info"> 125k Following </div>
                                 </div>
-                                <button class="button bg-primary-soft text-primary dark:text-white">follow</button>
-                            </div>
-
-                            <div class="side-list-item">
-                                <a href="timeline.html">
-                                    <img src="/images/avatars/avatar-3.jpg" alt="" class="side-list-image rounded-full">
-                                </a>
-                                <div class="flex-1">
-                                    <a href="timeline.html">
-                                        <h4 class="side-list-title"> Monroe Parker </h4>
-                                    </a>
-                                    <div class="side-list-info"> 320k Following </div>
-                                </div>
-                                <button class="button bg-primary-soft text-primary dark:text-white">follow</button>
-                            </div>
-
-                            <div class="side-list-item">
-                                <a href="timeline.html">
-                                    <img src="/images/avatars/avatar-5.jpg" alt="" class="side-list-image rounded-full">
-                                </a>
-                                <div class="flex-1">
-                                    <a href="timeline.html">
-                                        <h4 class="side-list-title"> James Lewis</h4>
-                                    </a>
-                                    <div class="side-list-info"> 125k Following </div>
-                                </div>
-                                <button class="button bg-primary-soft text-primary dark:text-white">follow</button>
-                            </div>
-
-                            <div class="side-list-item">
-                                <a href="timeline.html">
-                                    <img src="/images/avatars/avatar-6.jpg" alt="" class="side-list-image rounded-full">
-                                </a>
-                                <div class="flex-1">
-                                    <a href="timeline.html">
-                                        <h4 class="side-list-title"> Alexa stella </h4>
-                                    </a>
-                                    <div class="side-list-info"> 192k Following </div>
-                                </div>
-                                <button class="button bg-primary-soft text-primary dark:text-white">follow</button>
-                            </div>
-
-                            <div class="side-list-item">
-                                <a href="timeline.html">
-                                    <img src="/images/avatars/avatar-2.jpg" alt="" class="side-list-image rounded-full">
-                                </a>
-                                <div class="flex-1">
-                                    <a href="timeline.html">
-                                        <h4 class="side-list-title"> John Michael </h4>
-                                    </a>
-                                    <div class="side-list-info"> 320k Following </div>
-                                </div>
-                                <button class="button bg-primary-soft text-primary dark:text-white">follow</button>
+                                <form @submit.prevent="addFriend(people.id)">
+                                    <button ref="addfriendbutton" type="submit"
+                                        class="button bg-primary text-xs text-primary dark:text-white"
+                                        :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                                        Add friend
+                                    </button>
+                                </form>
                             </div>
 
                             <button class="bg-secondery button w-full mt-2 hidden">See all</button>
 
                         </div>
 
-                    </div>
+                    </div> -->
 
                     <!-- peaple you might know -->
-                    <div class="box p-5 px-6 border1 dark:bg-dark2 hidden">
-
-                        <div class="flex justify-between text-black dark:text-white">
-                            <h3 class="font-bold text-base"> Peaple You might know </h3>
-                            <button type="button"> <ion-icon name="sync-outline" class="text-xl"></ion-icon>
-                            </button>
-                        </div>
-
-                        <div
-                            class="space-y-4 capitalize text-xs font-normal mt-5 mb-2 text-gray-500 dark:text-white/80">
-
-                            <div class="flex items-center gap-3">
-                                <a href="timeline.html">
-                                    <img src="/images/avatars/avatar-7.jpg" alt=""
-                                        class="bg-gray-200 rounded-full w-10 h-10">
-                                </a>
-                                <div class="flex-1">
-                                    <a href="timeline.html">
-                                        <h4 class="font-semibold text-sm text-black dark:text-white"> Johnson
-                                            smith</h4>
-                                    </a>
-                                    <div class="mt-0.5"> Suggested For You </div>
-                                </div>
-                                <button type="button"
-                                    class="text-sm rounded-full py-1.5 px-4 font-semibold bg-secondery"> Follow
-                                </button>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <a href="timeline.html">
-                                    <img src="/images/avatars/avatar-5.jpg" alt=""
-                                        class="bg-gray-200 rounded-full w-10 h-10">
-                                </a>
-                                <div class="flex-1">
-                                    <a href="timeline.html">
-                                        <h4 class="font-semibold text-sm text-black dark:text-white"> James
-                                            Lewis</h4>
-                                    </a>
-                                    <div class="mt-0.5"> Followed by Johnson </div>
-                                </div>
-                                <button type="button"
-                                    class="text-sm rounded-full py-1.5 px-4 font-semibold bg-secondery"> Follow
-                                </button>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <a href="timeline.html">
-                                    <img src="/images/avatars/avatar-2.jpg" alt=""
-                                        class="bg-gray-200 rounded-full w-10 h-10">
-                                </a>
-                                <div class="flex-1">
-                                    <a href="timeline.html">
-                                        <h4 class="font-semibold text-sm text-black dark:text-white"> John
-                                            Michael</h4>
-                                    </a>
-                                    <div class="mt-0.5"> Followed by Monroe </div>
-                                </div>
-                                <button type="button"
-                                    class="text-sm rounded-full py-1.5 px-4 font-semibold bg-secondery"> Follow
-                                </button>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <a href="timeline.html">
-                                    <img src="/images/avatars/avatar-3.jpg" alt=""
-                                        class="bg-gray-200 rounded-full w-10 h-10">
-                                </a>
-                                <div class="flex-1">
-                                    <a href="timeline.html">
-                                        <h4 class="font-semibold text-sm text-black dark:text-white"> Monroe
-                                            Parker</h4>
-                                    </a>
-                                    <div class="mt-0.5"> Suggested For You </div>
-                                </div>
-                                <button type="button"
-                                    class="text-sm rounded-full py-1.5 px-4 font-semibold bg-secondery"> Follow
-                                </button>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <a href="timeline.html">
-                                    <img src="/images/avatars/avatar-4.jpg" alt=""
-                                        class="bg-gray-200 rounded-full w-10 h-10">
-                                </a>
-                                <div class="flex-1">
-                                    <a href="timeline.html">
-                                        <h4 class="font-semibold text-sm text-black dark:text-white"> Martin
-                                            Gray</h4>
-                                    </a>
-                                    <div class="mt-0.5"> Suggested For You </div>
-                                </div>
-                                <button type="button"
-                                    class="text-sm rounded-full py-1.5 px-4 font-semibold bg-secondery"> Follow
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-
+                    <SuggestedPeople :suggested-people="suggestedPeople" />
 
                     <!-- latest marketplace items -->
                     <div class="box p-5 px-6 border1 dark:bg-dark2">

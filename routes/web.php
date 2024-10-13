@@ -5,15 +5,25 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TimelineController;
+use App\Notifications\Friendship\FriendRequest;
+use App\Http\Controllers\NotificationsController;
 
 
-Route::get('/timeline', function () {
-    return Inertia::render('Timeline');
-})->middleware(['auth', 'verified'])->name('timeline');
 
-Route::get('/', function () {
-    return Inertia::render('Feed');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/{username}', [ProfileController::class, 'show'])->middleware(['auth', 'verified']);
+
+Route::get('/',[TimelineController::class,'index'])->middleware(['auth', 'verified'])->name('timeline');
+
+
+Route::post('/timeline/{user}/sendFriendRequest',[TimelineController::class,'sendFriendRequest'])->name('friends.request');
+
+
+Route::post('/notifications/{notification}/markAsRead',[NotificationsController::class,'markAsRead'])->name('notification.read');
+
+Route::get('/api/notifications',[NotificationsController::class,'index'])->name('api.notifications')->middleware('auth');
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

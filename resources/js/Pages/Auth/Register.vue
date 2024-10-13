@@ -68,8 +68,7 @@ const submit = () => {
                 <div>
                     <InputLabel for="password" value="Password" />
                     <div class="mt-2.5">
-                        <TextInput id="password" name="password" type="password" placeholder="***"
-                            v-model="form.password" />
+                        <TextInput id="password" name="password" type="password" v-model="form.password" />
                     </div>
 
                     <InputError class="mt-2" :message="form.errors.password" />
@@ -80,7 +79,7 @@ const submit = () => {
                     <InputLabel for="confirm_password" value="Confirm Password" />
                     <div class="mt-2.5">
                         <TextInput id="password_confirmation" name="password_confirmation" type="password"
-                            placeholder="***" v-model="form.password_confirmation" />
+                            v-model="form.password_confirmation" />
                     </div>
                     <InputError class="mt-2" :message="form.errors.password_confirmation" />
                 </div>
