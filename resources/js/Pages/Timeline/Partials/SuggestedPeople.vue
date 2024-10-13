@@ -1,8 +1,11 @@
 <script setup>
 import { useForm, usePage, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { useNotificationsStore } from '@/stores/notifications'
 
-const isSendingRequest = ref(false);
+
+const notifications = useNotificationsStore()
+
+const user = usePage().props.auth.user;
 
 const form = useForm({});
 
@@ -11,11 +14,9 @@ const props = defineProps({
         type: Object,
     },
 });
-const addFriend = (userId) => {
+const sendFriendRequest = (userId) => {
     form.post(route('friends.request', userId), {
         preserveScroll: true,
-        only: ['suggestedPeople'],
-        onSuccess: () => isSendingRequest.value = false,
     });
 };
 
@@ -38,13 +39,13 @@ const addFriend = (userId) => {
                     <img src="/images/avatars/avatar-7.jpg" alt="" class="bg-gray-200 rounded-full w-10 h-10">
                 </a>
                 <div class="flex-1">
-                    <a href="timeline.html">
+                    <a href="#">
                         <h4 class="font-semibold text-sm text-black dark:text-white">{{ person.name }}
                         </h4>
                     </a>
                     <div class="mt-0.5"> Suggested For You </div>
                 </div>
-                <button @click="addFriend(person.id)" type="button"
+                <button @click="sendFriendRequest(person.id)"
                     class="text-sm rounded-full py-1.5 px-4 font-semibold bg-primary" :disabled="form.processing"
                     :class="{ 'opacity-25': form.processing }">
                     Add friend

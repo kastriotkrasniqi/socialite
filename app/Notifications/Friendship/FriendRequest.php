@@ -3,7 +3,7 @@
 namespace App\Notifications\Friendship;
 
 use App\Models\User;
-use ReflectionClass;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Bus\Queueable;
 use App\Enums\NotificationType;
 use Illuminate\Notifications\Notification;
@@ -12,7 +12,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 
-class FriendRequest extends Notification implements  ShouldBroadcast
+class FriendRequest extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -31,9 +31,8 @@ class FriendRequest extends Notification implements  ShouldBroadcast
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast']; // Add 'broadcast' channel
     }
-
 
     /**
      * Get the array representation of the notification.
@@ -50,4 +49,34 @@ class FriendRequest extends Notification implements  ShouldBroadcast
         ];
     }
 
+    /**
+     * Get the broadcastable representation of the notification.
+     *
+     * @return BroadcastMessage
+     */
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage([
+            'type' => NotificationType::FRIEND_REQUEST->value,
+            'user' => $this->user->only('id', 'name', 'email', 'username'),
+            'message' => ucfirst($this->user->name) . ' has sent you a friend request',
+            'url' => '/' . $this->user->username,
+        ]);
+    }
+
+    /**
+     * Get the broadcast event name.
+     *
+     * @return string
+     */
+    public function broadcastAs()
+    {
+        return 'friend.request';
+    }
+
+
+
+    public function broadcastOn(){
+        return new PrivateChannel('App.Models.User.'.$this->user->id);
+    }
 }

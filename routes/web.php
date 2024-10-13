@@ -10,8 +10,7 @@ use App\Notifications\Friendship\FriendRequest;
 use App\Http\Controllers\NotificationsController;
 
 
-
-Route::get('/{username}', [ProfileController::class, 'show'])->middleware(['auth', 'verified']);
+// Route::get('/{username}', [ProfileController::class, 'show'])->middleware(['auth', 'verified']);
 
 Route::get('/',[TimelineController::class,'index'])->middleware(['auth', 'verified'])->name('timeline');
 

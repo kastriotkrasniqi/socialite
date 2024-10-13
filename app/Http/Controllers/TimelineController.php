@@ -29,6 +29,6 @@ class TimelineController extends Controller
         }
 
 
-        return to_route('timeline',['status' => 'success']);
+        return to_route('timeline',);
     }
 }

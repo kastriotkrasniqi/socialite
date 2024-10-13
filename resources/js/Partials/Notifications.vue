@@ -1,37 +1,19 @@
 <script setup>
 import { usePage, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
 import { onMounted, computed } from 'vue';
+import { useNotificationsStore } from '@/stores/notifications';
 
-const notifications = ref([]);
+const notifications = useNotificationsStore();
 
-const user = usePage().props.auth.user;
 
-const unreadNotificationsCount = computed(() => {
-    return notifications.value.filter(notification => notification.read_at === null).length;
-});
+const unreadNotificationsCount = computed(() => notifications.unreadNotificationsCount);
 
 onMounted(() => {
-    getNotifications();
-
-    // Echo.private('App.Models.User.' + user.id)
-    //     .notification((notification) => {
-    //         console.log(notification.type);
-    //     });
+    notifications.fetchNotifications();
 });
 
-const getNotifications = async () => {
-    const response = await axios.get(route('api.notifications'));
-    notifications.value = response.data.data;
-    console.log(response.data.data);
-};
-
-
-const markAsRead = async (id) => {
-    await axios.post(route('notification.read', id));
-};
-
 </script>
+
 
 
 <template>
@@ -80,9 +62,9 @@ const markAsRead = async (id) => {
         <div class="text-sm h-[400px] w-full overflow-y-auto pr-2">
 
             <!-- contents list -->
-            <div class="pl-2 p-1 text-sm font-normal dark:text-white" v-for="notification in notifications"
-                :key="notification.id">
-                <Link :href="notification.url"
+            <div class="pl-2 p-1 text-sm font-normal dark:text-white"
+                v-for="notification in notifications.notifications" :key="notification.id">
+                <Link href="{{ notification.url }}"
                     class="relative flex items-center gap-3 p-2 duration-200 rounded-xl pr-10 hover:bg-secondery dark:hover:bg-white/10 "
                     :class="!notification.read_at ? 'bg-teal-500/5' : ''">
                 <div class="relative w-12 h-12 shrink-0"> <img src="/images/avatars/avatar-3.jpg" alt=""
