@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\LikeController;
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TimelineController;
@@ -32,6 +33,11 @@ Route::post('/post',[PostController::class,'store'])->name('post.store')->middle
 Route::post('/comment',[CommentController::class,'store'])->name('comment.store')->middleware('auth');
 
 Route::post('/like',[LikeController::class,'store'])->name('like.store')->middleware('auth');
+
+
+Route::post('/search',[SearchController::class,'index'])
+->middleware('auth')
+->name('search.results');
 
 
 Route::middleware('auth')->group(function () {

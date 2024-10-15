@@ -166,7 +166,8 @@ defineProps({
                     <!-- add story -->
                     <CreatePost />
                     <!-- end add story -->
-                    {{ console.log(posts) }}
+
+
                     <!--  post -->
                     <template v-for="post in posts.data" :key="post.id">
                         <Post :post="post" />

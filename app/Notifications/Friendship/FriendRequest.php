@@ -31,7 +31,7 @@ class FriendRequest extends Notification implements ShouldBroadcast
      */
     public function via(object $notifiable): array
     {
-        return ['database', 'broadcast']; // Add 'broadcast' channel
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -64,19 +64,4 @@ class FriendRequest extends Notification implements ShouldBroadcast
         ]);
     }
 
-    /**
-     * Get the broadcast event name.
-     *
-     * @return string
-     */
-    public function broadcastAs()
-    {
-        return 'friend.request';
-    }
-
-
-
-    public function broadcastOn(){
-        return new PrivateChannel('App.Models.User.'.$this->user->id);
-    }
 }

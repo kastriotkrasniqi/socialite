@@ -1,7 +1,7 @@
 {
-    "name": "laravel/laravel",
+    "name": "socialite",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Connect with Friends",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {

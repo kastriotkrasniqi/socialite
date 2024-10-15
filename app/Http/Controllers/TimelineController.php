@@ -32,6 +32,6 @@ class TimelineController extends Controller
         }
 
 
-        return to_route('timeline',);
+        return to_route('timeline');
     }
 }

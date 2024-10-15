@@ -1,23 +1,24 @@
 <script setup>
 import { useForm, usePage, router } from '@inertiajs/vue3';
-import { useNotificationsStore } from '@/stores/notifications'
-
-
-const notifications = useNotificationsStore()
-
-const user = usePage().props.auth.user;
-
-const form = useForm({});
 
 const props = defineProps({
     suggestedPeople: {
         type: Object,
     },
 });
+
+const emit = defineEmits(['notify']);
+
+const user = usePage().props.auth.user;
+
+const form = useForm({});
+
 const sendFriendRequest = (userId) => {
     form.post(route('friends.request', userId), {
         preserveScroll: true,
     });
+
+
 };
 
 </script>

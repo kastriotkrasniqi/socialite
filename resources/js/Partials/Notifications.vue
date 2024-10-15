@@ -1,12 +1,20 @@
 <script setup>
 import { usePage, Link } from '@inertiajs/vue3';
 import { onMounted, computed } from 'vue';
-import { useNotificationsStore } from '@/stores/notifications';
+import { useNotificationsStore } from '@/stores/Notifications';
 
 const notifications = useNotificationsStore();
 
 
 const unreadNotificationsCount = computed(() => notifications.unreadNotificationsCount);
+
+const user = usePage().props.auth.user;
+
+
+Echo.private(`App.Models.User.${user.id}`)
+    .notification((e) => {
+        notifications.fetchNotifications();
+    });
 
 onMounted(() => {
     notifications.fetchNotifications();
