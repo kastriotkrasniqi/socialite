@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
-    public function index(Request $request)
+    public function __invoke(Request $request)
     {
         $searchTerm = $request->search;
 

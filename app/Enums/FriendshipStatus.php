@@ -2,13 +2,13 @@
 
 namespace App\Enums;
 
-enum FriendshipStatus: string
+enum FriendshipStatus: int
 {
-    case PENDING   = 'pending';
+    case PENDING   = 0;
 
-    case ACCEPTED  = 'accepted';
+    case ACCEPTED  = 1;
 
-    case REJECTED  = 'rejected';
+    case DENIED  = 2;
 
-    case BLOCKED   = 'blocked';
+    case BLOCKED   = 3;
 }

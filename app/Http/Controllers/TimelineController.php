@@ -25,17 +25,5 @@ class TimelineController extends Controller
     }
 
 
-    public function sendFriendRequest(Request $request)
-    {
 
-        $recipient = User::find($request->user);
-        $sender = $request->user();
-
-        if($sender->sendFriendRequest($recipient)){
-            $recipient->notify(new FriendRequest($sender));
-        }
-
-
-        return to_route('timeline');
-    }
 }

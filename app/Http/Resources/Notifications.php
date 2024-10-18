@@ -20,7 +20,6 @@ class Notifications extends JsonResource
             'read_at' => $this->read_at,
             'created_at' => $this->created_at,
             'created_at_for_human' => $this->created_at->diffForHumans(),
-            'url' => $this->data['url'],
             'user' => [
                 'id' => $this->data['user']['id'],
                 'name' => $this->data['user']['name'],

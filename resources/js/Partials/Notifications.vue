@@ -11,10 +11,10 @@ const unreadNotificationsCount = computed(() => notifications.unreadNotification
 const user = usePage().props.auth.user;
 
 
-Echo.private(`App.Models.User.${user.id}`)
-    .notification((e) => {
-        notifications.fetchNotifications();
-    });
+// Echo.private(`App.Models.User.${user.id}`)
+//     .notification((e) => {
+//         notifications.fetchNotifications();
+//     });
 
 onMounted(() => {
     notifications.fetchNotifications();

@@ -15,40 +15,64 @@ use App\Notifications\Friendship\FriendRequest;
 use App\Http\Controllers\NotificationsController;
 
 
-Route::get('/profile/{id}', [ProfileController::class, 'show'])->middleware(['auth', 'verified'])->name('profile.show');
 
-Route::get('/',[TimelineController::class,'index'])->middleware(['auth', 'verified'])->name('timeline');
+Route::middleware('auth')->group(function () {
 
-Route::post('/friendship/{id}/accept',[FriendshipController::class, 'accept_friendship'])->name('friend.accept')->middleware('auth');
-Route::post('/friendship/{id}/deny',[FriendshipController::class, 'accept_friendship'])->name('friend.deny')->middleware('auth');
-
-
-Route::post('/timeline/{user}/sendFriendRequest',[TimelineController::class,'sendFriendRequest'])->name('friends.request');
+    // PROFILE
+    Route::get('/profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
 
 
-Route::post('/notifications/{notification}/markAsRead',[NotificationsController::class,'markAsRead'])->name('notification.read');
-
-Route::get('/api/notifications',[NotificationsController::class,'index'])->name('api.notifications')->middleware('auth');
-
-
-Route::post('/post',[PostController::class,'store'])->name('post.store')->middleware('auth');
-
-Route::delete('/post/{id}',[PostController::class,'destroy'])->name('post.destroy')->middleware('auth');
+    // TIMELINE
+    Route::get('/', [TimelineController::class, 'index'])->name('timeline');
 
 
+     // NOTIFICATIONS
+    Route::group(['prefix' => 'notifications'], function () {
+        Route::get('/', [NotificationsController::class, 'index'])->name('api.notifications');
 
-Route::post('/comment',[CommentController::class,'store'])->name('comment.store')->middleware('auth');
-
-Route::delete('/comment/{id}',[CommentController::class,'destroy'])->name('comment.destroy')->middleware('auth');
-
-Route::put('/comment/{id}',[CommentController::class,'update'])->name('comment.update')->middleware('auth');
-
-Route::post('/like',[LikeController::class,'store'])->name('like.store')->middleware('auth');
+        Route::post('/{notification}/markAsRead', [NotificationsController::class, 'markAsRead'])->name('notification.read');
+    });
 
 
-Route::post('/search',[SearchController::class,'index'])
-->middleware('auth')
-->name('search.results');
+    // GLOBAL SEARCH
+    Route::post('/search', SearchController::class)->name('search.results');
+
+
+
+    // FRIENDSHIP
+    Route::group(['prefix' => 'friendship'], function () {
+        Route::post('/{id}/send', [FriendshipController::class, 'send'])->name('friends.request');
+
+        Route::post('/{id}/accept', [FriendshipController::class, 'accept'])->name('friend.accept');
+
+        Route::post('/{id}/deny', [FriendshipController::class, 'deny'])->name('friend.deny');
+
+        Route::post('/{id}/remove', [FriendshipController::class, 'remove'])->name('friend.remove');
+    });
+
+
+
+    // POST
+    Route::group(['prefix' => '/post'], function () {
+        Route::post('/', [PostController::class, 'store'])->name('post.store');
+
+        Route::delete('/{id}', [PostController::class, 'destroy'])->name('post.destroy');
+
+    });
+
+
+
+    //COMMENT
+    Route::group(['prefix' => 'comment'], function () {
+        Route::post('/', [CommentController::class, 'store'])->name('comment.store');
+        Route::delete('/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
+        Route::put('/{id}', [CommentController::class, 'update'])->name('comment.update');
+    });
+
+    // LIKE
+    Route::post('/like', LikeController::class)->name('like.store');
+
+});
 
 
 Route::middleware('auth')->group(function () {
@@ -57,4 +81,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class LikeController extends Controller
 {
-    public function store(Request $request)
+    public function __invoke(Request $request)
     {
         $request->validate(['post_id' => 'required|exists:posts,id']);
 
