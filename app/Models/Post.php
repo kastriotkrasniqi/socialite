@@ -15,6 +15,17 @@ class Post extends Model
     protected $guarded = [];
 
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($post) {
+            $post->comments()->delete();
+            $post->likes()->delete();
+        });
+    }
+
+
     public function user()
     {
         return $this->belongsTo(User::class);

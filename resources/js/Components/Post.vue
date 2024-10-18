@@ -1,37 +1,96 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import { Link, usePage, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
 const props = defineProps({
     post: {
         type: Object
+    },
+    can: {
+        type: Array
     }
 })
 
+const user = usePage().props.auth.user;
+const comment_body = ref('');
 
-const form = useForm({
-    body: '',
-    post_id: props.post.id
-})
+const edit_comment_body = ref('');
 
-const likeForm = useForm({
-    post_id: props.post.id,
-})
 
 
 const comment = () => {
-
-    form.post(route('comment.store'), {
-        preserveScroll: true,
-        onSuccess: () => {
-            form.body = '';
-        },
-    });
+    axios.post(route('comment.store'), {
+        body: comment_body.value,
+        post_id: props.post.id
+    }).then(res => {
+        comment_body.value = '';
+        props.post.comments_count = res.data.comments_count;
+        props.post.comments = res.data.comments.data;
+    })
 };
 
 
+const delete_comment = (comment_id) => {
+    axios.delete(route('comment.destroy', comment_id)).then(res => {
+        const index = props.post.comments.findIndex(comment => comment.id === comment_id);
+        if (index !== -1) {
+            props.post.comments.splice(index, 1);
+            props.post.comments_count -= 1;
+            const dropdownElement = document.getElementById('comment-dropdown-' + comment_id);
+            if (dropdownElement) {
+                UIkit.dropdown(dropdownElement).hide(0);
+                document.getElementById('edit_comment_body').focus();
+            }
+        }
+    })
+}
+
+let current_comment_id = null;
+
+const edit_comment = (comment) => {
+    edit_comment_body.value = comment.body;
+    current_comment_id = comment.id;
+    const dropdownElement = document.getElementById('comment-dropdown-' + comment.id);
+    if (dropdownElement) {
+        UIkit.dropdown(dropdownElement).hide(0);
+        document.getElementById('edit_comment_body').focus();
+    }
+
+}
+
+const update_comment = () => {
+    if (current_comment_id) {
+        axios.put(route('comment.update', current_comment_id), {
+            body: edit_comment_body.value
+        }).then(res => {
+            const comment = props.post.comments.find(comment => comment.id === current_comment_id);
+            if (comment) {
+                comment.body = edit_comment_body.value;
+                edit_comment_body.value = '';
+            }
+            current_comment_id = null;
+            UIkit.modal('#edit-comment-modal').hide();
+
+        })
+    }
+}
+
+
+const delete_form = useForm({});
+const delete_post = (post_id) => {
+    delete_form.delete(route('post.destroy', post_id), {
+        onSuccess: () => {
+        }
+    })
+}
+
+
 const like = () => {
-    likeForm.post(route('like.store'), {
-        preserveScroll: true
-    });
+    axios.post(route('like.store'), {
+        post_id: props.post.id
+    }).then(res => {
+        props.post.isLiked = res.data.is_liked;
+        props.post.likes_count = res.data.likes_count;
+    })
 
 }
 
@@ -44,11 +103,12 @@ const like = () => {
 
         <!-- post heading -->
         <div class="flex gap-3 sm:p-4 p-2.5 text-sm font-medium">
-            <a href="timeline.html"> <img src="/images/avatars/avatar-3.jpg" alt="" class="w-9 h-9 rounded-full"> </a>
+            <Link :href="route('profile.show', post.user.id)"> <img src="/images/avatars/avatar-3.jpg" alt=""
+                class="w-9 h-9 rounded-full"> </Link>
             <div class="flex-1">
-                <a href="timeline.html">
-                    <h4 class="text-black dark:text-white">{{ post.user.name }}</h4>
-                </a>
+                <Link :href="route('profile.show', post.user.id)">
+                <h4 class="text-black dark:text-white">{{ post.user.name }}</h4>
+                </Link>
                 <div class="text-xs text-gray-500 dark:text-white/80">{{ post.created_at_diff_human }}</div>
             </div>
 
@@ -68,9 +128,15 @@ const like = () => {
                         <a href="#"> <ion-icon class="text-xl shrink-0" name="share-outline"></ion-icon>
                             Share your profile </a>
                         <hr>
-                        <a href="#" class="text-red-400 hover:!bg-red-50 dark:hover:!bg-red-500/50">
+                        <a v-if="user.id != post.user.id" href="#"
+                            class="text-red-400 hover:!bg-red-50 dark:hover:!bg-red-500/50">
                             <ion-icon class="text-xl shrink-0" name="stop-circle-outline"></ion-icon>
                             Unfollow </a>
+
+                        <a v-if="user.id == post.user.id" @click="delete_post(post.id)" href="#"
+                            class="text-red-400 hover:!bg-red-50 dark:hover:!bg-red-500/50">
+                            <ion-icon class="text-xl shrink-0" name="trash-outline"></ion-icon>
+                            Delete Post </a>
                     </nav>
                 </div>
             </div>
@@ -136,32 +202,43 @@ const like = () => {
         </div>
 
         <!-- comments -->
-        <div class="sm:p-4 p-2.5 border-t border-gray-100 font-normal space-y-3 relative dark:border-slate-700/40">
+        <div v-if="post.comments.length"
+            class="sm:p-4 p-2.5 border-t border-gray-100 font-normal space-y-3 relative dark:border-slate-700/40">
 
             <div v-for="comment in post.comments" class="flex items-start gap-3 relative">
-                <a href="timeline.html"> <img src="/images/avatars/avatar-2.jpg" alt=""
-                        class="w-6 h-6 mt-1 rounded-full"> </a>
+                <Link :href="route('profile.show', comment.user.id)"> <img src="/images/avatars/avatar-2.jpg" alt=""
+                    class="w-6 h-6 mt-1 rounded-full"> </Link>
                 <div class="flex-1">
-                    <a href="timeline.html" class="text-black font-medium inline-block dark:text-white">
-                        {{ comment.user.name }} </a>
+                    <Link :href="route('profile.show', comment.user.id)"
+                        class="text-black font-medium inline-block dark:text-white">
+                    {{ comment.user.name }} </Link>
                     <p class="mt-0.5">{{ comment.body }}</p>
                 </div>
-            </div>
-            <!-- <div class="flex items-start gap-3 relative">
-                <a href="timeline.html"> <img src="/images/avatars/avatar-3.jpg" alt=""
-                        class="w-6 h-6 mt-1 rounded-full"> </a>
-                <div class="flex-1">
-                    <a href="timeline.html" class="text-black font-medium inline-block dark:text-white">
-                        Monroe </a>
-                    <p class="mt-0.5"> You captured the moment.😎 </p>
+                <div class="-mr-1">
+                    <button type="button" class="button-icon w-6 h-6"> <ion-icon class="text-xl"
+                            name="ellipsis-horizontal"></ion-icon> </button>
+                    <div :id="'comment-dropdown-' + comment.id" class="w-[180px]"
+                        uk-dropdown="pos: bottom-right; animation: uk-animation-scale-up uk-transform-origin-top-right; animate-out: true; mode: click">
+                        <nav>
+                            <a @click.prevent="edit_comment(comment)" v-if="user.id == comment.user.id" href="#"
+                                uk-toggle="target: #edit-comment-modal" tabindex="0" aria-expanded="false">
+                                <ion-icon class="shrink-0" name="create-outline"></ion-icon>
+                                Edit</a>
+                            <hr>
+                            <a v-if="user.id == comment.user.id" @click.prevent="delete_comment(comment.id)" href="#"
+                                class="text-red-400 hover:!bg-red-50 dark:hover:!bg-red-500/50">
+                                <ion-icon class="shrink-0" name="trash-outline"></ion-icon>
+                                Delete</a>
+                        </nav>
+                    </div>
                 </div>
-            </div> -->
+            </div>
 
-            <button type="button" class="flex items-center gap-1.5 text-gray-500 hover:text-blue-500 mt-2">
+            <!-- <button type="button" class="flex items-center gap-1.5 text-gray-500 hover:text-blue-500 mt-2">
                 <ion-icon name="chevron-down-outline"
                     class="ml-auto duration-200 group-aria-expanded:rotate-180"></ion-icon>
                 More Comment
-            </button>
+            </button> -->
 
         </div>
 
@@ -176,7 +253,8 @@ const like = () => {
 
                     <textarea placeholder="Add Comment...." rows="1"
                         class="w-full resize-none !bg-transparent px-4 py-2 focus:!border-transparent focus:!ring-transparent"
-                        v-model="form.body" @keydown.enter.exact.prevent="comment" required min="1"></textarea>
+                        v-model="comment_body" @keydown.enter.exact.prevent="comment" required min="1"
+                        id="body_textarea"></textarea>
 
                     <div class="!top-2 pr-2" uk-drop="pos: bottom-right; mode: click">
                         <div class="flex items-center gap-2"
@@ -198,10 +276,53 @@ const like = () => {
                 </div>
 
 
-                <button type="submit" class="text-sm rounded-full py-1.5 px-3.5 bg-secondery">
-                    Replay</button>
+                <button type="submit" class="flex items-center">
+                    <ion-icon class="text-2xl" name="arrow-forward-circle-outline"></ion-icon></button>
             </div>
         </form>
 
     </div>
+
+
+
+    <!-- edit comment -->
+    <div class="hidden lg:p-20 uk- open" id="edit-comment-modal" uk-modal="">
+
+        <div
+            class="uk-modal-dialog tt relative overflow-hidden mx-auto bg-white shadow-xl rounded-lg md:w-[520px] w-full dark:bg-dark2">
+
+            <div class="text-center py-4 border-b mb-0 dark:border-slate-700">
+                <h2 class="text-sm font-medium text-black">Edit Comment </h2>
+
+                <!-- close button -->
+                <button type="button" class="button-icon absolute top-0 right-0 m-2.5 uk-modal-close">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+            </div>
+
+            <div class="space-y-5 mt-3 p-2">
+                <textarea
+                    class="w-full !text-black placeholder:!text-black !bg-white !border-transparent focus:!border-transparent focus:!ring-transparent !font-normal !text-xl   dark:!text-white dark:placeholder:!text-white dark:!bg-slate-800"
+                    v-model="edit_comment_body" id="edit_comment_body" rows="6" autofocus
+                    placeholder="What do you have in mind?">
+                </textarea>
+
+            </div>
+            <div class="p-5 flex justify-between items-center">
+                <div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button @click="update_comment(current_comment_id)"
+                        class="button bg-blue-500 text-white py-2 px-12 text-[14px]">
+                        Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end edit comment -->
+
 </template>

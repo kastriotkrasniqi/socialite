@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FriendshipController;
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
@@ -14,9 +15,12 @@ use App\Notifications\Friendship\FriendRequest;
 use App\Http\Controllers\NotificationsController;
 
 
-// Route::get('/{username}', [ProfileController::class, 'show'])->middleware(['auth', 'verified']);
+Route::get('/profile/{id}', [ProfileController::class, 'show'])->middleware(['auth', 'verified'])->name('profile.show');
 
 Route::get('/',[TimelineController::class,'index'])->middleware(['auth', 'verified'])->name('timeline');
+
+Route::post('/friendship/{id}/accept',[FriendshipController::class, 'accept_friendship'])->name('friend.accept')->middleware('auth');
+Route::post('/friendship/{id}/deny',[FriendshipController::class, 'accept_friendship'])->name('friend.deny')->middleware('auth');
 
 
 Route::post('/timeline/{user}/sendFriendRequest',[TimelineController::class,'sendFriendRequest'])->name('friends.request');
@@ -29,8 +33,15 @@ Route::get('/api/notifications',[NotificationsController::class,'index'])->name(
 
 Route::post('/post',[PostController::class,'store'])->name('post.store')->middleware('auth');
 
+Route::delete('/post/{id}',[PostController::class,'destroy'])->name('post.destroy')->middleware('auth');
+
+
 
 Route::post('/comment',[CommentController::class,'store'])->name('comment.store')->middleware('auth');
+
+Route::delete('/comment/{id}',[CommentController::class,'destroy'])->name('comment.destroy')->middleware('auth');
+
+Route::put('/comment/{id}',[CommentController::class,'update'])->name('comment.update')->middleware('auth');
 
 Route::post('/like',[LikeController::class,'store'])->name('like.store')->middleware('auth');
 

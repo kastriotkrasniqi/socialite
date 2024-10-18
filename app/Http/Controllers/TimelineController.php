@@ -13,11 +13,15 @@ use App\Notifications\Friendship\FriendRequest;
 class TimelineController extends Controller
 {
     public function index(Request $request){
+        $user = $request->user();
         $suggestedPeople = $request->user()->notFriendsWith();
-        $posts = PostResource::collection($request->user()->posts()->latest()->paginate(5));
+        $posts = PostResource::collection(Post::withCount('likes', 'comments')->latest()->paginate(5));
 
 
-        return Inertia::render('Timeline/Timeline',compact('suggestedPeople','posts'));
+        return Inertia::render('Timeline/Timeline',[
+            'posts' => $posts,
+            'suggestedPeople' => $suggestedPeople,
+        ]);
     }
 
 

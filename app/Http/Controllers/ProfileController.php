@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -17,9 +18,8 @@ class ProfileController extends Controller
 
     public function show(Request $request,User $user)
     {
-        $user = User::where('username', $request->username)->first(['id','name','username','email']);
-        $user = $user->only(['id','name','email','username']);
-        return Inertia::render('Profile/View',compact('user'));
+        $user = User::findOrFail($request->id);
+        return Inertia::render('Profile/View',['user' => new UserResource($user)]);
     }
 
 

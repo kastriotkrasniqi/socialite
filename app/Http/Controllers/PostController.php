@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class PostController extends Controller
 {
@@ -55,14 +56,21 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post)
+    public function destroy(Request $request)
     {
-        //
+
+        $post = Post::findOrFail($request->id);
+
+        Gate::authorize('delete', $post);
+
+        $post->delete();
+
+        return back();
     }
 }

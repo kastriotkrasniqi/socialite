@@ -21,9 +21,9 @@ class PostResource extends JsonResource
             'created_at' => $this->created_at,
             'created_at_diff_human' => $this->created_at->diffForHumans(),
             'user' => new UserResource($this->user),
-            'comments' => CommentResource::collection($this->comments()->paginate(5)),
-            'comments_count' => $this->comments()->count(),
-            'likes_count' => $this->likes()->count(),
+            'comments' => CommentResource::collection($this->comments()->paginate(10)),
+            'comments_count' => $this->comments_count,
+            'likes_count' => $this->likes_count,
             'isLiked' => $this->likes()->where('user_id', $request->user()->id)->exists(),
         ];
     }

@@ -9,9 +9,7 @@ class LikeController extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate([
-            'post_id' => 'required|exists:posts,id'
-        ]);
+        $request->validate(['post_id' => 'required|exists:posts,id']);
 
         $post = Post::findOrFail($request->post_id);
 
@@ -19,12 +17,15 @@ class LikeController extends Controller
 
         if ($like) {
             $like->delete();
+            $isLiked = false;
         } else {
-            $post->likes()->create([
-                'user_id' => $request->user()->id
-            ]);
+            $post->likes()->create(['user_id' => $request->user()->id]);
+            $isLiked = true;
         }
 
-        return back();
+        return response([
+            'is_liked' => $isLiked,
+            'likes_count' => $post->likes()->count(),
+        ]);
     }
 }
