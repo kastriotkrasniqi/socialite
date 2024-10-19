@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\PostResource;
+use App\Http\Resources\UserResource;
 use App\Models\Post;
 use App\Models\User;
 use Inertia\Inertia;
@@ -20,7 +21,7 @@ class TimelineController extends Controller
 
         return Inertia::render('Timeline/Timeline',[
             'posts' => $posts,
-            'suggestedPeople' => $suggestedPeople,
+            'suggestedPeople' => UserResource::collection($suggestedPeople),
         ]);
     }
 

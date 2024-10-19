@@ -7,7 +7,6 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['notify']);
 
 const user = usePage().props.auth.user;
 
@@ -28,11 +27,12 @@ const sendFriendRequest = (userId) => {
 
         <div class="flex justify-between text-black dark:text-white">
             <h3 class="font-bold text-base"> People you may know </h3>
+
             <button type="button"> <ion-icon name="sync-outline" class="text-xl"></ion-icon>
             </button>
         </div>
 
-        <div v-for="person in props.suggestedPeople" :key="person.id"
+        <div v-for="person in props.suggestedPeople.data" :key="person.id"
             class="space-y-4 capitalize text-xs font-normal mt-5 mb-2 text-gray-500 dark:text-white/80">
 
             <div class="flex items-center gap-3">

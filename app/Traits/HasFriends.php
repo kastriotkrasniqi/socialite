@@ -16,8 +16,7 @@ trait HasFriends
     {
         return $this->belongsToMany(User::class, 'friendships', 'user_id', 'friend_id')
             ->withPivot('status')
-            ->wherePivot('status', FriendshipStatus::ACCEPTED->value)
-            ->withTimestamps();
+            ->wherePivot('status', FriendshipStatus::ACCEPTED->value);
     }
 
     /**
@@ -27,8 +26,7 @@ trait HasFriends
     {
         return $this->belongsToMany(User::class, 'friendships', 'friend_id', 'user_id')
             ->withPivot('status')
-            ->wherePivot('status', FriendshipStatus::PENDING->value)
-            ->withTimestamps();
+            ->wherePivot('status', FriendshipStatus::PENDING->value);
     }
 
     /**
@@ -38,8 +36,7 @@ trait HasFriends
     {
         return $this->belongsToMany(User::class, 'friendships', 'user_id', 'friend_id')
             ->withPivot('status')
-            ->wherePivot('status', FriendshipStatus::PENDING->value)
-            ->withTimestamps();
+            ->wherePivot('status', FriendshipStatus::PENDING->value);
     }
 
 
@@ -145,14 +142,15 @@ trait HasFriends
     public function notFriendsWith()
     {
         // Get the IDs of users who are friends, including pending friends
-        $friendIds = $this->friends()->pluck('friend_id')
-            ->merge($this->pendingFriendRequests()->pluck('friend_id'))
-            ->unique()
-            ->values();
+       $friendIds = $this->friends()->pluck('friend_id')
+           ->merge($this->pendingFriendRequests()->pluck('friend_id'))
+           ->merge($this->friendRequests()->pluck('user_id'))
+           ->unique()
+           ->values();
 
-        // Get all users except those who are already friends
-        return User::whereNotIn('id', $friendIds)
-            ->where('id', '!=', $this->id) // Exclude the current user
-            ->get();
+       // Get all users except those who are already friends
+       return User::whereNotIn('id', $friendIds)
+           ->where('id', '!=', $this->id) // Exclude the current user
+           ->get();
     }
 }

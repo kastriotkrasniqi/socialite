@@ -23,7 +23,6 @@ class CommentController extends Controller
         ]);
 
 
-        // Use CommentResource to wrap the paginated result
         return response([
             'comments' => CommentResource::collection($post->comments()->paginate(10))->response()->getData(),
             'comments_count' => $post->comments()->count(),

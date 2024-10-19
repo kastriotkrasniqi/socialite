@@ -37,7 +37,7 @@ const delete_comment = (comment_id) => {
             props.post.comments_count -= 1;
             const dropdownElement = document.getElementById('comment-dropdown-' + comment_id);
             if (dropdownElement) {
-                UIkit.dropdown(dropdownElement).hide(0);
+                // UIkit.dropdown(dropdownElement).hide(0);
                 document.getElementById('edit_comment_body').focus();
             }
         }
@@ -51,7 +51,7 @@ const edit_comment = (comment) => {
     current_comment_id = comment.id;
     const dropdownElement = document.getElementById('comment-dropdown-' + comment.id);
     if (dropdownElement) {
-        UIkit.dropdown(dropdownElement).hide(0);
+        // UIkit.dropdown(dropdownElement).hide(0);
         document.getElementById('edit_comment_body').focus();
     }
 
@@ -68,7 +68,7 @@ const update_comment = () => {
                 edit_comment_body.value = '';
             }
             current_comment_id = null;
-            UIkit.modal('#edit-comment-modal').hide();
+            // UIkit.modal('#edit-comment-modal').hide();
 
         })
     }
@@ -178,7 +178,7 @@ const like = () => {
         <!-- post icons -->
         <div class="sm:p-4 p-2.5 flex items-center gap-4 text-xs font-semibold">
             <div>
-                <d class="flex items-center gap-2.5">
+                <div class="flex items-center gap-2.5">
                     <button @click="like" type="button" class="button-icon text-red-500 bg-red-100 dark:bg-slate-700">
                         <ion-icon class="text-lg" :style="{
                             color: post.isLiked ? 'red' : 'transparent',
@@ -188,7 +188,7 @@ const like = () => {
                         }" name="heart"></ion-icon> </button>
 
                     <a href="#">{{ post.likes_count }}</a>
-                </d iv>
+                </div>
             </div>
             <div class="flex items-center gap-3">
                 <button type="button" class="button-icon bg-slate-200/70 dark:bg-slate-700">

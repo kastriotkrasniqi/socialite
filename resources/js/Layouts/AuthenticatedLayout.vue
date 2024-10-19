@@ -3,6 +3,9 @@ import { Link, usePage } from '@inertiajs/vue3';
 import Notifications from '@/Partials/Notifications.vue';
 import SearchDropdown from '@/Partials/GlobalSearch.vue';
 
+
+
+
 const user = usePage().props.auth.user;
 </script>
 
@@ -10,8 +13,8 @@ const user = usePage().props.auth.user;
     <div id="wrapper">
 
         <!-- header -->
-        <header
-            class="z-[100] h-[--m-top] fixed top-0 left-0 w-full flex items-center bg-white/80 sky-50 backdrop-blur-xl border-b border-slate-200 dark:bg-dark2 dark:border-slate-800">
+        <header class=" z-[100] h-[--m-top] fixed top-0 left-0 w-full flex items-center bg-white/80 sky-50 backdrop-blur-xl
+            border-b border-slate-200 dark:bg-dark2 dark:border-slate-800">
 
             <div class="flex items-center w-full xl:px-6 px-2 max-lg:gap-10">
 
@@ -495,7 +498,6 @@ const user = usePage().props.auth.user;
             </div>
 
         </header>
-
         <!-- sidebar -->
         <div id="site__sidebar"
             class="fixed top-0 left-0 z-[99] pt-[--m-top] overflow-hidden transition-transform xl:duration-500 max-xl:w-full max-xl:-translate-x-full">
@@ -509,6 +511,7 @@ const user = usePage().props.auth.user;
                     <nav id="side">
 
                         <ul>
+                            <span v-if="status">{{ status }}</span>
                             <li class="active">
                                 <a href="feed.html">
                                     <img src="/images/icons/home.png" alt="feeds" class="w-6">
